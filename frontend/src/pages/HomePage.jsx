@@ -1,7 +1,7 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import FriendList from "../components/Dashboard/FriendList";
-import SearchUsers from "../components/Dashboard/SerachUser";
+import SearchUsers from "../components/Dashboard/SearchUser";
 import Recommendations from "../components/Dashboard/FriendRecommendation";
 
 const HomePage = () => {

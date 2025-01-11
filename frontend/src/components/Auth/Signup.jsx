@@ -14,7 +14,7 @@ const Signup = () => {
     e.preventDefault();
     try {
       const { data } = await axios.post(
-        "http://localhost:5000/api/auth/register",
+        "http://localhost:5000/api/Auth/register",
         formData,
         {
           headers: {

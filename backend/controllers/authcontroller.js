@@ -49,17 +49,15 @@ const registerUser = async (req, res) => {
   }
 };
 
-const loginUser = async (req, res) => {
+/*const loginUser = async (req, res) => {
   const { username, password } = req.body;
+  if (!username || !password) {
+    return res.status(400).json({ message: "All fields are required." });
+  }
 
   try {
-    // Validate input
-    if (!username || !password) {
-      return res.status(400).json({ message: "All fields are required." });
-    }
-
     // Find the user by username
-    const user = await User.findOne({ username: username.toLowerCase() });
+    const user = await User.findOne({ username});
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
@@ -88,6 +86,49 @@ const loginUser = async (req, res) => {
     console.error("Error during login:", error.message);
     res.status(500).json({ message: "Error logging in" });
   }
+};*/
+const loginUser = async (req, res) => {
+  const { username, password } = req.body;
+
+  // Validate input
+  if (!username || !password) {
+    return res.status(400).json({ message: "All fields are required." });
+  }
+
+  try {
+    // Find the user by username
+    const user = await User.findOne({ username });
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    // Verify the password
+    const isPasswordCorrect = await bcrypt.compare(password, user.password);
+    if (!isPasswordCorrect) {
+      return res.status(400).json({ message: "Invalid credentials" });
+    }
+
+    // Generate a JWT token
+    const token = jwt.sign(
+      { id: user._id },
+      process.env.JWT_SECRET || "defaultsecret", // Add a fallback for development
+      { expiresIn: "7d" }
+    );
+
+    // Respond with user data and token
+    res.status(200).json({
+      user: {
+        id: user._id,
+        username: user.username,
+        email: user.email,
+      },
+      token,
+    });
+  } catch (error) {
+    console.error("Error during login:", error);
+    res.status(500).json({ message: "An error occurred during login. Please try again later." });
+  }
 };
+
 
 module.exports = { registerUser, loginUser };
